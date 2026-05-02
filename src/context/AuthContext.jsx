@@ -47,17 +47,9 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const verifyOtp = async (username, otp) => {
-    const res = await API.post('/auth/verify-otp', { username, otp });
-    const data = res.data;
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data));
-    setUser(data);
-    return data;
-  };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, verifyOtp, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
