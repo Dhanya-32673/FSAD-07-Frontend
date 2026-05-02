@@ -18,14 +18,19 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === 'ECONNABORTED') {
-      
       return Promise.reject({
         response: {
           data: { message: 'Server is taking too long to respond. Please try again.' }
         }
       });
     }
-    if (error.response?.status === 401) {
+
+    // Only auto-redirect on 401 for NON-auth endpoints.
+    // Auth endpoints (login, register, verify-otp) should return errors
+    // to the calling component so they can display the message to the user.
+    const requestUrl = error.config?.url || '';
+    const isAuthEndpoint = requestUrl.includes('/auth/');
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
